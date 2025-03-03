@@ -1,0 +1,79 @@
+/* Global Styles */
+@import "tailwindcss";
+
+body {
+  @apply bg-[#ebebeb] text-[#322625] font-sans;
+}
+
+/* Table Container */
+.table-container {
+  @apply w-full bg-white shadow-lg rounded-lg p-4;
+}
+
+/* Table */
+.table {
+  @apply w-full border-collapse border border-gray-300;
+}
+
+.table th, .table td {
+  @apply p-3 border border-gray-300 text-left;
+}
+
+.table th {
+  @apply bg-[#c0e3e5] text-[#322625] uppercase font-bold;
+}
+
+.table tr:hover {
+  @apply bg-gray-100;
+}
+
+/* Filters & Controls */
+.controls {
+  @apply flex items-center gap-4 mb-4;
+}
+
+.filter-bar {
+  @apply flex items-center gap-4 mb-4 border-b border-gray-300 pb-2;
+}
+
+select, input {
+  @apply p-2 border border-[#322625] rounded bg-white text-[#322625] focus:ring focus:ring-[#c0e3e5];
+}
+
+.filter-dropdown {
+  @apply flex items-center gap-2;
+}
+
+.filter-dropdown select {
+  @apply p-2 border border-gray-400 rounded bg-white text-[#322625];
+}
+
+/* Search Button */
+.search-button {
+  @apply bg-[#c0e3e5] p-2 rounded shadow flex items-center;
+}
+
+.search-button:hover {
+  @apply bg-[#a0d3d5];
+}
+
+.search-icon {
+  @apply text-[#322625] text-lg;
+}
+
+/* Pagination */
+.pagination {
+  @apply flex justify-center gap-2 mt-4;
+}
+
+.pagination button {
+  @apply p-2 border border-[#322625] bg-[#fdc936] rounded shadow cursor-pointer;
+}
+
+.pagination button:hover {
+  @apply bg-[#e0b830];
+}
+
+.pagination .active {
+  @apply bg-[#322625] text-white font-bold;
+}
