@@ -1,55 +1,50 @@
-# React + TypeScript + Vite
+# React-Redux Data Table App 🚀
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a **React.js** application using **Redux Toolkit** for state management. It features **user** and **product management** with filtering, pagination, and navigation.
 
-Currently, two official plugins are available:
+## 🛠️ Features
+- 📦 **Products & Users Management** (Fetched via API)
+- 🔍 **Search & Filter** (By title, brand, category, etc.)
+- 📊 **Pagination** (Client-side pagination)
+- 🔔 **Toast Notifications** (For success & errors)
+- 🔄 **Reusable Data Table** (Dynamic and configurable)
+- 🏗 **Modular Code Structure** (Constants, Types, Redux, Pages)
+- 🌐 **React Router for Navigation**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Installation & Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### **Step 1: Clone the Repository**
+```sh
+git clone https://github.com/farhatbaig/assessment
+cd assessment
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+npm install
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+npm start
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
-# assessment
+📦 src
+ ┣ 📂 components
+ ┃ ┣ 📜 DataTable.tsx
+ ┃ ┣ 📜 Navbar.tsx
+ ┃ ┗ 📜 Toast.tsx
+ ┣ 📂 features
+ ┃ ┣ 📜 usersSlice.ts
+ ┃ ┗ 📜 productsSlice.ts
+ ┣ 📂 pages
+ ┃ ┣ 📜 UsersPage.tsx
+ ┃ ┗ 📜 ProductsPage.tsx
+ ┣ 📂 types
+ ┃ ┗ 📜 index.ts
+ ┣ 📂 constants
+ ┃ ┗ 📜 index.ts
+ ┣ 📜 App.tsx
+ ┣ 📜 store.ts
+ ┗ 📜 index.tsx
+
+
+
+
+
