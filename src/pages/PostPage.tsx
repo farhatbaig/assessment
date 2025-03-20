@@ -6,7 +6,7 @@ import {
   deletePost,
   updatePost,
   addPost,
-} from "../features/usersSlice";
+} from "../features/PostSlice";
 import { RootState, AppDispatch } from "../store";
 import DataTable from "../components/DataTable";
 import { PAGINATION, TABLE_COLUMNS } from "../constants";
@@ -14,7 +14,7 @@ import { Post } from "../types";
 
 const PostList = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { posts, total, status } = useSelector((state: RootState) => state.users);
+  const { posts, total, status } = useSelector((state: RootState) => state.posts);
 
   const [limit, setLimit] = useState<number>(PAGINATION.DEFAULT_LIMIT);
   const [currentPage, setCurrentPage] = useState<number>(PAGINATION.DEFAULT_PAGE);
@@ -26,7 +26,6 @@ const PostList = () => {
     userId: 1,
   });
 
-  // State to hold error messages for empty fields
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -51,10 +50,8 @@ const PostList = () => {
       return;
     }
 
-    // Clear error on successful validation
     setError("");
     dispatch(addPost(newPost));
-    // Reset fields
     setNewPost({ ...newPost, title: "", body: "" });
   };
 
@@ -90,7 +87,7 @@ const PostList = () => {
             placeholder="Title"
             value={newPost.title}
             onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-            className="border p-2 mr-2"
+            className="border p-2 mr-2 custom-input"
           />
 
         </div>
@@ -100,7 +97,8 @@ const PostList = () => {
             placeholder="Body"
             value={newPost.body}
             onChange={(e) => setNewPost({ ...newPost, body: e.target.value })}
-            className="border p-2 mr-2"
+            className="border p-2 mr-2 custom-input"
+
           />
         </div>
 

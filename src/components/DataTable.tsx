@@ -139,10 +139,11 @@ const DataTable: React.FC<DataTableProps> = ({
                         type="text"
                         value={String(editValues[col.key] ?? '')}
                         disabled={col.key === 'id'}
+                      
                         onChange={(e) =>
                           setEditValues({ ...editValues, [col.key]: e.target.value })
                         }
-                        className="p-1 border rounded w-full"
+                        className={col.key === 'id' ? "disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500 disabled:shadow-none dark:disabled:border-gray-700 dark:disabled:bg-gray-800/20" : "border custom-input border-gray-200 p-1 rounded"}  
                       />
                     ) : (
                       String(row[col.key]) || 'N/A'

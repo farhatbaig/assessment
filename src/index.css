@@ -36,10 +36,11 @@ body {
   @apply flex items-center gap-4 mb-4 border-b border-gray-300 pb-2;
 }
 
-select, input {
-  @apply p-2 border border-[#322625] rounded bg-white text-[#322625] focus:ring focus:ring-[#c0e3e5];
-}
 
+input.custom-input{
+  @apply p-2 border border-[#322625] rounded bg-white text-[#322625] focus:ring focus:ring-[#c0e3e5];
+
+}
 .filter-dropdown {
   @apply flex items-center gap-2;
 }
