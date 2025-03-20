@@ -1,16 +1,13 @@
-/* Global Styles */
 @import "tailwindcss";
 
 body {
   @apply bg-[#ebebeb] text-[#322625] font-sans;
 }
 
-/* Table Container */
 .table-container {
   @apply w-full bg-white shadow-lg rounded-lg p-4;
 }
 
-/* Table */
 .table {
   @apply w-full border-collapse border border-gray-300;
 }
@@ -27,7 +24,6 @@ body {
   @apply bg-gray-100;
 }
 
-/* Filters & Controls */
 .controls {
   @apply flex items-center gap-4 mb-4;
 }
@@ -49,7 +45,6 @@ input.custom-input{
   @apply p-2 border border-gray-400 rounded bg-white text-[#322625];
 }
 
-/* Search Button */
 .search-button {
   @apply bg-[#c0e3e5] p-2 rounded shadow flex items-center;
 }
@@ -62,7 +57,6 @@ input.custom-input{
   @apply text-[#322625] text-lg;
 }
 
-/* Pagination */
 .pagination {
   @apply flex justify-center gap-2 mt-4;
 }
