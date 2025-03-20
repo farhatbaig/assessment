@@ -1,77 +1,152 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { User, UsersPayload } from '../types';
+import { Post } from '../types';
 import { API_ENDPOINTS } from '../constants';
 import { toast } from 'react-toastify';
 
-
-interface UsersState {
-  users: User[];
+interface PostState {
+  posts: Post[];
   total: number;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
 }
 
-const initialState: UsersState = {
-  users: [],
+const initialState: PostState = {
+  posts: [],
   total: 0,
   status: 'idle',
 };
+const url =  API_ENDPOINTS.POSTS;
+export const fetchPosts = createAsyncThunk(
+  'posts/fetchPosts',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get<Post[]>(url);
+      return { posts: response.data, total: response.data.length };
 
-export const fetchUsers = createAsyncThunk(
-  'users/fetchUsers',
+    } catch (err) {
+      console.error(err);
+      return rejectWithValue('Failed to fetch posts');
+    }
+  }
+);
+
+export const addPost = createAsyncThunk(
+  'posts/addUser',
+
+  async (post: Post, { rejectWithValue }) => {
+    try {
+      const response = await axios.post<Post>(
+        url,
+        post,
+        { headers: { 'Content-type': 'application/json; charset=UTF-8' } }
+      );
+      if (response.status === 201 || response.status === 200) {
+        toast.success('Post added successfully');
+      }
+      return response.data;
+      
+    } catch (err) {
+      toast.error('Failed to add post');
+      console.error(err);
+      return rejectWithValue('Failed to add post');
+    }
+  }
+);
+
+export const updatePost = createAsyncThunk(
+  'posts/updateUser',
   async (
-    {
-      limit = 5,
-      skip = 0,
-      key = '', 
-      value = '',
-    }: { limit?: number; skip?: number; key?: string; value?: string },
+    { id, postData }: { id: number; postData: Post },
     { rejectWithValue }
   ) => {
     try {
-       let url = API_ENDPOINTS.USERS;
-
-      if (key && value) {
-        url += `/filter?key=${encodeURIComponent(key)}&value=${encodeURIComponent(value)}`;
-      } else {
-        url += `?limit=${limit}&skip=${skip}`;
+      const response = await axios.put<Post>(
+        `${url}/${id}`,
+        postData,
+        { headers: { 'Content-type': 'application/json; charset=UTF-8' } }
+      );
+      if (response.status === 201 || response.status === 200) {
+        toast.success('Post Updated successfully');
       }
+      return response.data;
+    } catch (err) {
+      toast.error('Failed to update post');
 
-      const response = await axios.get<UsersPayload>(url);
-
-      return {
-        users: response.data.users || [],
-        total: response.data.total || 0,
-      };
-
-    } catch (err: unknown) {
-        if (axios.isAxiosError(err)) {
-            toast.error(err.response?.data?.message || "Failed to fetch Users");
-            return rejectWithValue(err.response?.data || "Failed to fetch Users");
-          }
-          toast.error("An unknown error occurred while fetching Users.");
-        return rejectWithValue("An unknown error occurred while fetching Users.");
+      console.error(err);
+      return rejectWithValue('Failed to update post ',);
     }
-    
+  }
+);
+
+export const deletePost = createAsyncThunk(
+  'posts/deleteUser',
+  async (id: number, { rejectWithValue }) => {
+    try {
+      await axios.delete(`${url}/${id}`);
+      toast.success('Post Delete successfully');
+      return id;
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to delete post');
+      return rejectWithValue('Failed to delete post');
+    }
+  }
+);
+
+export const fetchFilteredPosts = createAsyncThunk(
+  'posts/fetchFilteredPosts',
+  async ({ key, value }: { key: string; value: string }, { rejectWithValue }) => {
+    try {
+      const urlFilter = `${url}?${key}=${encodeURIComponent(
+        value
+      )}`;
+      const response = await axios.get<Post[]>(urlFilter);
+      return { posts: response.data, total: response.data.length };
+    } catch (err) {
+      console.error(err);
+      return rejectWithValue('Failed to fetch filtered posts');
+    }
   }
 );
 
 const usersSlice = createSlice({
-  name: 'users',
+  name: 'posts',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUsers.pending, (state) => {
+      .addCase(fetchPosts.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
+      .addCase(fetchPosts.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.users = action.payload.users;
+        state.posts = action.payload.posts;
         state.total = action.payload.total;
       })
-      .addCase(fetchUsers.rejected, (state) => {
+      .addCase(fetchPosts.rejected, (state) => {
         state.status = 'failed';
+      })
+
+      .addCase(addPost.fulfilled, (state, action) => {
+        state.posts.push(action.payload);
+        state.total += 1;
+      })
+
+      .addCase(updatePost.fulfilled, (state, action) => {
+        const index = state.posts.findIndex((post) => post.id === action.payload.id);
+        if (index !== -1) {
+          state.posts[index] = action.payload;
+        }
+      })
+
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.posts = state.posts.filter((post) => post.id !== action.payload);
+        state.total -= 1;
+      })
+
+      .addCase(fetchFilteredPosts.fulfilled, (state, action) => {
+        state.posts = action.payload.posts;
+        state.total = action.payload.total;
       });
   },
 });

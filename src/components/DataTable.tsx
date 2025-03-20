@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch } from 'react-icons/fa';
 import { DataTableProps, RowData } from '../types';
 import { PAGINATION } from '../constants';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 
 function getPaginationRange(currentPage: number, totalPages: number): Array<number | string> {
@@ -18,7 +18,6 @@ function getPaginationRange(currentPage: number, totalPages: number): Array<numb
     const right = Math.min(currentPage + 2, totalPages - 1);
 
     if (left > 2) pages.push('...');
-
     for (let i = left; i <= right; i++) {
       pages.push(i);
     }
@@ -28,48 +27,68 @@ function getPaginationRange(currentPage: number, totalPages: number): Array<numb
   return pages;
 }
 
-
-
 const DataTable: React.FC<DataTableProps> = ({
   data,
   columns,
-  filterableKeys = [],    
-  status = 'idle',
+  filterableKeys = [],
   total = 0,
   limit = PAGINATION.DEFAULT_LIMIT,
   currentPage = PAGINATION.DEFAULT_PAGE,
   setCurrentPage = () => {},
-  setLimit = () => {},
-  fetchFilteredData = () => {},
+  onDelete,
+  onUpdate,
 }) => {
-  const totalPages = total && limit ? Math.ceil(total / limit) : 1;
-
-  const [showInput, setShowInput] = useState(false);
-  const [inputType, setInputType] = useState<'search' | 'filter'>('search');
-  const [activeFilterKey, setActiveFilterKey] = useState<string>('');
+  const totalPages = limit ? Math.ceil(total / limit) : 1;
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterValue, setFilterValue] = useState('');
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
 
-  const [filteredData, setFilteredData] = useState<RowData[]>(data);
+  const [editRow, setEditRow] = useState<RowData | null>(null);
+  const [editValues, setEditValues] = useState<Partial<RowData>>({});
+
+  const [filteredData, setFilteredData] = useState<RowData[]>([]);
 
   useEffect(() => {
-    if (!searchQuery) {
-      setFilteredData(data);
-      return;
-    }
-    const lower = searchQuery.toLowerCase();
-    const newData = data.filter((row) =>
-      Object.values(row).some((val) =>
-        String(val).toLowerCase().includes(lower)
-      )
-    );
-    setFilteredData(newData);
-  }, [searchQuery, data]);
+    let newData = [...data];
 
-  const handleFilterChange = (key: string, value: string) => {
-    setCurrentPage(1);
-    fetchFilteredData({ key, value });
+    if (searchQuery) {
+      const lower = searchQuery.toLowerCase();
+      newData = newData.filter((row) =>
+        Object.values(row).some((val) => String(val).toLowerCase().includes(lower))
+      );
+    }
+
+    Object.keys(filters).forEach((key) => {
+      const filterText = filters[key]?.toLowerCase();
+      if (filterText) {
+        newData = newData.filter((row) =>
+          String(row[key]).toLowerCase().includes(filterText)
+        );
+      }
+    });
+
+    // 3) Pagination: slice from (currentPage - 1) * limit to currentPage * limit
+    const start = (currentPage - 1) * limit;
+    const end = start + limit;
+    newData = newData.slice(start, end);
+
+    setFilteredData(newData);
+  }, [data, searchQuery, filters, currentPage, limit]);
+
+  const handleEditClick = (row: RowData) => {
+    setEditRow(row);
+    setEditValues(row);
+  };
+
+  const handleUpdateClick = () => {
+    if (editRow && onUpdate) {
+      onUpdate(editValues);
+      setEditRow(null);
+    }
+  };
+
+  const handleDeleteClick = (id: number) => {
+    onDelete?.(id);
   };
 
   const pagesToDisplay = getPaginationRange(currentPage, totalPages);
@@ -77,149 +96,117 @@ const DataTable: React.FC<DataTableProps> = ({
   return (
     <div className="bg-white shadow-lg rounded-lg p-2 overflow-x-auto">
       <div className="flex items-center gap-4 border border-gray-300 p-2 mb-4">
-        
-      <select
-          onChange={(e) => {
-            setCurrentPage(1);
-            setLimit(Number(e.target.value));
-          }}
-          className="p-2 border rounded bg-white text-[#322625]"
-        >
-          {PAGINATION.LIMIT_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-        <span className="text-[#322625]">Entries</span>
-
-        <span className="border-l border-gray-300 h-5" />
-
-        <button
-          onClick={() => {
-            setShowInput(!showInput);
-            setInputType('search');
-            setActiveFilterKey('');
-            setFilterValue('');
-          }}
-          className="p-2 border rounded bg-[#c0e3e5] flex items-center gap-1"
-        >
-          <FaSearch />
-        </button>
-
-        {showInput && inputType === 'search' && (
-          <input
-            type="text"
-            placeholder="Search..."
-            className="p-2 border rounded"
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        )}
-
-        <span className="border-l border-gray-300 h-5" />
-
-        <div className="flex items-center gap-4 text-[#322625]">
-          {filterableKeys.map((filterKey) => {
-            const colLabel = columns.find((c) => c.key === filterKey)?.label || filterKey;
-            return (
-              <div
-                key={filterKey}
-                className="cursor-pointer flex items-center gap-1"
-                onClick={() => {
-                  setShowInput(true);
-                  setInputType('filter');
-                  setActiveFilterKey(filterKey);
-                  setSearchQuery('');
-                  setFilterValue('');
-                }}
-              >
-                {colLabel} ▾
-              </div>
-            );
-          })}
-        </div>
+        <input
+          type="text"
+          placeholder="Search..."
+          className="p-2 border rounded"
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
 
-      {showInput && inputType === 'filter' && activeFilterKey && (
-        <div className="p-2 mb-2">
-          <input
-            type="text"
-            placeholder={`Filter by ${activeFilterKey}`}
-            className="p-2 border rounded w-full"
-            value={filterValue}
-            onChange={(e) => {
-              setFilterValue(e.target.value);
-              handleFilterChange(activeFilterKey, e.target.value);
-            }}
-          />
-        </div>
-      )}
-
-      {status === 'loading' ? (
-        <p className="text-center text-gray-600">Loading...</p>
-      ) : (
-        <>
-          <table className="w-full border-collapse border border-gray-300 text-left">
-            <thead>
-              <tr className="bg-[#c0e3e5] text-[#322625] uppercase text-sm">
+      <table className="w-full border-collapse border border-gray-300 text-left">
+        <thead>
+          <tr className="bg-[#c0e3e5] text-[#322625] uppercase text-sm">
+            {columns.map((col) => (
+              <th key={col.key} className="p-3 border border-gray-400">
+                {col.label}
+                {filterableKeys.includes(col.key) && (
+                  <input
+                    type="text"
+                    placeholder={`Filter by ${col.label}`}
+                    className="ml-2 p-1 border rounded"
+                    onChange={(e) =>
+                      setFilters({ ...filters, [col.key]: e.target.value })
+                    }
+                  />
+                )}
+              </th>
+            ))}
+            <th className="p-3 border border-gray-400">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredData.length > 0 ? (
+            filteredData.map((row) => (
+              <tr
+                key={String(row.id)}
+                className="border-b border-gray-200 hover:bg-gray-100"
+              >
                 {columns.map((col) => (
-                  <th
-                    key={col.key}
-                    className="p-3 border border-gray-400"
-                  >
-                    {col.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.length > 0 ? (
-                filteredData.map((row) => (
-                  <tr
-                    key={String(row.id)}
-                    className="border-b border-gray-200 hover:bg-gray-100"
-                  >
-                    {columns.map((col) => {
-                      const cellVal = row[col.key];
-                      return (
-                        <td key={col.key} className="p-3">
-                          {cellVal == null ? 'N/A' : String(cellVal)}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={columns.length} className="text-center p-4 text-gray-500">
-                    No data available
+                  <td key={col.key} className="p-3">
+                    {editRow?.id === row.id ? (
+                      <input
+                        type="text"
+                        value={String(editValues[col.key] ?? '')}
+                        disabled={col.key === 'id'}
+                        onChange={(e) =>
+                          setEditValues({ ...editValues, [col.key]: e.target.value })
+                        }
+                        className="p-1 border rounded w-full"
+                      />
+                    ) : (
+                      String(row[col.key]) || 'N/A'
+                    )}
                   </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                ))}
+                <td className="p-3 flex gap-2">
+                  {editRow?.id === row.id ? (
+                    <button
+                      onClick={handleUpdateClick}
+                      className="bg-blue-500 text-white px-2 py-1 rounded"
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleEditClick(row)}
+                      className=" text-black px-2 py-1 rounded"
+                    >
+                       <FaEdit />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDeleteClick(row.id as number)}
+                    className="text-black px-2 py-1 rounded"
+                  >
+                    <FaTrash />
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan={columns.length + 1}
+                className="text-center p-4 text-gray-500"
+              >
+                No data available
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
 
-          <div className="flex justify-center mt-4">
-            {pagesToDisplay.map((page, idx) =>
-              page === '...' ? (
-                <span key={idx} className="px-3 py-1 mx-1 text-gray-400">
-                  ...
-                </span>
-              ) : (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentPage(Number(page))}
-                  className={`px-3 py-1 mx-1 rounded ${
-                    currentPage === page ? 'bg-yellow-400' : 'bg-gray-200'
-                  }`}
-                >
-                  {page}
-                </button>
-              )
-            )}
-          </div>
-        </>
-      )}
+      {/* PAGINATION */}
+      <div className="flex justify-center mt-4">
+        {pagesToDisplay.map((page, idx) =>
+          page === '...' ? (
+            <span key={idx} className="px-3 py-1 mx-1 text-gray-400">
+              ...
+            </span>
+          ) : (
+            <button
+              key={idx}
+              onClick={() => setCurrentPage(Number(page))}
+              className={`px-3 py-1 mx-1 rounded ${
+                currentPage === page ? 'bg-yellow-400' : 'bg-gray-200'
+              }`}
+            >
+              {page}
+            </button>
+          )
+        )}
+      </div>
     </div>
   );
 };

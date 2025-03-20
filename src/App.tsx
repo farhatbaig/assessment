@@ -1,8 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import UsersPage from "./pages/UsersPage";
-import ProductsPage from "./pages/ProductsPage";
+import PostPage from "./pages/PostPage";
 import Navbar from "./components/NavBar";
 
 function App() {
@@ -23,8 +22,7 @@ function App() {
       />
       <div className="container mx-auto p-4">
         <Routes>
-          <Route path="/" element={<UsersPage />} />
-          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/" element={<PostPage />} />
         </Routes>
       </div>
     </Router>

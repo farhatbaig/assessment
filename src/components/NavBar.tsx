@@ -10,16 +10,9 @@ const Navbar: React.FC = () => {
           `px-2 py-1 rounded ${isActive ? "bg-yellow-500" : "hover:bg-yellow-600"}`
         }
       >
-        Users
+        Posts
       </NavLink>
-      <NavLink
-        to="/products"
-        className={({ isActive }) =>
-          `px-2 py-1 rounded ${isActive ? "bg-yellow-500" : "hover:bg-yellow-600"}`
-        }
-      >
-        Products
-      </NavLink>
+    
     </nav>
   );
 };
