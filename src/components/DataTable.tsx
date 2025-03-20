@@ -67,7 +67,6 @@ const DataTable: React.FC<DataTableProps> = ({
       }
     });
 
-    // 3) Pagination: slice from (currentPage - 1) * limit to currentPage * limit
     const start = (currentPage - 1) * limit;
     const end = start + limit;
     newData = newData.slice(start, end);
@@ -188,7 +187,6 @@ const DataTable: React.FC<DataTableProps> = ({
         </tbody>
       </table>
 
-      {/* PAGINATION */}
       <div className="flex justify-center mt-4">
         {pagesToDisplay.map((page, idx) =>
           page === '...' ? (
