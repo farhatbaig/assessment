@@ -1,10 +1,10 @@
 # React-Redux Data Table App 🚀
 
-This project is a **React.js** application using **Redux Toolkit** for state management. It features **user** and **product management** with filtering, pagination, and navigation.
+This project is a **React.js** application using **Redux Toolkit** for state management. It features **Post** with, pagination, and navigation.
 
 ## 🛠️ Features
-- 📦 **Products & Users Management** (Fetched via API)
-- 🔍 **Search & Filter** (By title, brand, category, etc.)
+- 📦 **Post Management** (Fetched via API)
+- 🔍 **Search ** 
 - 📊 **Pagination** (Client-side pagination)
 - 🔔 **Toast Notifications** (For success & errors)
 - 🔄 **Reusable Data Table** (Dynamic and configurable)
@@ -31,11 +31,11 @@ npm start
  ┃ ┣ 📜 Navbar.tsx
  ┃ ┗ 📜 Toast.tsx
  ┣ 📂 features
- ┃ ┣ 📜 usersSlice.ts
- ┃ ┗ 📜 productsSlice.ts
+ ┃ ┣ 📜 PostSlice.ts
+ ┃ 
  ┣ 📂 pages
- ┃ ┣ 📜 UsersPage.tsx
- ┃ ┗ 📜 ProductsPage.tsx
+ ┃ ┣ 📜 PostPage.tsx
+ ┃ 
  ┣ 📂 types
  ┃ ┗ 📜 index.ts
  ┣ 📂 constants
